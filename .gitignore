@@ -1,0 +1,11 @@
+venv/
+.venv/
+__pycache__/
+*.pyc
+.env
+.streamlit/
+.vscode/
+data/
+demo/
+utils/
+assets/
