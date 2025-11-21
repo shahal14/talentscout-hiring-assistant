@@ -32,13 +32,14 @@ if user_input:
         st.write(user_input)
 
     try:
+        messages = [{"role": "system", "content": system_prompt}]
+        messages.extend(st.session_state.messages)
         response = client.chat.completions.create(
             model="gpt-4o-mini",
-            messages=[
-                {"role": "system", "content": system_prompt},
-                {"role": "user", "content": user_input}
-            ]
-        )
+            messages=messages)
+    
+         
+            
         reply = response.choices[0].message["content"]
     except Exception as e:
         reply = f"Error: {e}"
@@ -46,3 +47,4 @@ if user_input:
     st.session_state.messages.append({"role": "assistant", "content": reply})
     with st.chat_message("assistant"):
         st.write(reply)
+
