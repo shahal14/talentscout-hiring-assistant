@@ -1,0 +1,4 @@
+Generate 3–5 technical interview questions for the following tech stack:
+{tech_stack}
+
+Questions must test real-world understanding and practical skills.
