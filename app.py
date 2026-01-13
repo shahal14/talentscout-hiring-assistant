@@ -8,7 +8,10 @@ load_dotenv()
 
 # Configure Gemini
 genai.configure(api_key=os.getenv("GEMINI_API_KEY"))
-model = genai.GenerativeModel("gemini-1.5-flash")
+git add app.py
+git commit -m "Fix Gemini model to gemini-pro (supported)"
+git push
+
 
 # Page config
 st.set_page_config(page_title="TalentScout AI Hiring Assistant", page_icon="🤖")
@@ -49,4 +52,5 @@ if user_input:
     st.session_state.messages.append({"role": "assistant", "content": reply})
     with st.chat_message("assistant"):
         st.write(reply)
+
 
