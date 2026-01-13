@@ -10,8 +10,7 @@ load_dotenv()
 # ----------------------------
 client = InferenceClient(
     model="mistralai/Mistral-7B-Instruct-v0.2",
-    token=os.getenv("HF_API_TOKEN"),
-    base_url="https://router.huggingface.co"
+    token=os.getenv("HF_API_TOKEN")
 )
 
 # ----------------------------
