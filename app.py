@@ -1,13 +1,16 @@
-from huggingface_hub import InferenceClient
 import streamlit as st
+from huggingface_hub import InferenceClient
 import os
 from dotenv import load_dotenv
 
 load_dotenv()
 
+HF_TOKEN = os.getenv("HF_API_TOKEN")
+
 client = InferenceClient(
     model="mistralai/Mistral-7B-Instruct-v0.2",
-    token=os.getenv("HF_API_TOKEN")
+    token=HF_TOKEN,
+    base_url="https://router.huggingface.co"
 )
 
 st.set_page_config(page_title="TalentScout AI Hiring Assistant", page_icon="🤖")
@@ -29,22 +32,22 @@ if user_input:
         st.write(user_input)
 
     try:
-        response = client.chat.completions.create(
-            messages=[
-                {
-                    "role": "system",
-                    "content": "You are an AI hiring assistant. Ask technical interview questions based on the candidate's tech stack."
-                },
-                {
-                    "role": "user",
-                    "content": user_input
-                }
-            ],
-            max_tokens=300,
-            temperature=0.4
-        )
+        prompt = f"""
+<s>[INST]
+You are an AI hiring assistant.
+Ask technical interview questions based on the candidate's tech stack.
 
-        reply = response.choices[0].message.content
+User input:
+{user_input}
+[/INST]
+"""
+
+        reply = client.text_generation(
+            prompt=prompt,
+            max_new_tokens=300,
+            temperature=0.4,
+            do_sample=True
+        )
 
     except Exception as e:
         reply = f"Error: {e}"
