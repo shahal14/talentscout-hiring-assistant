@@ -7,10 +7,10 @@ load_dotenv()
 
 HF_TOKEN = os.getenv("HF_API_TOKEN")
 
+# ✅ DO NOT pass base_url
 client = InferenceClient(
     model="mistralai/Mistral-7B-Instruct-v0.2",
-    token=HF_TOKEN,
-    base_url="https://router.huggingface.co"
+    token=HF_TOKEN
 )
 
 st.set_page_config(page_title="TalentScout AI Hiring Assistant", page_icon="🤖")
