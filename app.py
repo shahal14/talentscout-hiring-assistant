@@ -8,9 +8,7 @@ load_dotenv()
 
 # Configure Gemini
 genai.configure(api_key=os.getenv("GEMINI_API_KEY"))
-git add app.py
-git commit -m "Fix Gemini model to gemini-pro (supported)"
-git push
+model = genai.GenerativeModel("gemini-pro")
 
 
 # Page config
@@ -52,5 +50,6 @@ if user_input:
     st.session_state.messages.append({"role": "assistant", "content": reply})
     with st.chat_message("assistant"):
         st.write(reply)
+
 
 
