@@ -1,19 +1,22 @@
 import streamlit as st
-from huggingface_hub import InferenceClient
 import os
+from huggingface_hub import InferenceClient
 from dotenv import load_dotenv
 
 load_dotenv()
 
-# Load token
-HF_TOKEN = st.secrets.get("HF_TOKEN") or os.getenv("HF_TOKEN")
-
-# Initialize HF client
+# ----------------------------
+# Hugging Face Client
+# ----------------------------
 client = InferenceClient(
     model="mistralai/Mistral-7B-Instruct-v0.2",
-    token=HF_TOKEN
+    token=os.getenv("HF_API_TOKEN"),
+    base_url="https://router.huggingface.co"
 )
 
+# ----------------------------
+# Streamlit UI
+# ----------------------------
 st.set_page_config(page_title="TalentScout AI Hiring Assistant", page_icon="🤖")
 st.title("🤖 TalentScout – AI Hiring Assistant")
 st.write("I will collect your details and generate technical questions based on your tech stack.")
@@ -22,12 +25,12 @@ st.write("I will collect your details and generate technical questions based on 
 if "messages" not in st.session_state:
     st.session_state.messages = []
 
-# Display chat
+# Display chat history
 for msg in st.session_state.messages:
     with st.chat_message(msg["role"]):
         st.write(msg["content"])
 
-# Input
+# User input
 user_input = st.chat_input("Type your message...")
 
 if user_input:
@@ -37,17 +40,19 @@ if user_input:
 
     try:
         prompt = f"""
-You are an AI hiring assistant.
-Ask technical questions based on candidate tech stack.
+You are TalentScout, an AI hiring assistant.
+Your task is to collect candidate details and generate technical interview questions
+based on the candidate's tech stack.
 
-Conversation:
+User message:
 {user_input}
 """
 
         response = client.text_generation(
             prompt=f"<s>[INST] {prompt} [/INST]",
             max_new_tokens=300,
-            temperature=0.4
+            temperature=0.4,
+            do_sample=True
         )
 
         reply = response.strip()
