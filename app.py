@@ -1,22 +1,24 @@
 import streamlit as st
-import google.generativeai as genai
+from huggingface_hub import InferenceClient
 import os
 from dotenv import load_dotenv
 
-# Load env variables
 load_dotenv()
 
-# Configure Gemini
-genai.configure(api_key=os.getenv("GEMINI_API_KEY"))
-model = genai.GenerativeModel("gemini-pro")
+# Load token
+HF_TOKEN = st.secrets.get("HF_TOKEN") or os.getenv("HF_TOKEN")
 
+# Initialize HF client
+client = InferenceClient(
+    model="mistralai/Mistral-7B-Instruct-v0.2",
+    token=HF_TOKEN
+)
 
-# Page config
 st.set_page_config(page_title="TalentScout AI Hiring Assistant", page_icon="🤖")
 st.title("🤖 TalentScout – AI Hiring Assistant")
 st.write("I will collect your details and generate technical questions based on your tech stack.")
 
-# Session state
+# Session memory
 if "messages" not in st.session_state:
     st.session_state.messages = []
 
@@ -25,14 +27,7 @@ for msg in st.session_state.messages:
     with st.chat_message(msg["role"]):
         st.write(msg["content"])
 
-# Load prompt
-def load_prompt(path):
-    with open(path, "r", encoding="utf-8") as f:
-        return f.read()
-
-SYSTEM_PROMPT = load_prompt("prompts/system_prompt.txt")
-
-# User input
+# Input
 user_input = st.chat_input("Type your message...")
 
 if user_input:
@@ -41,15 +36,25 @@ if user_input:
         st.write(user_input)
 
     try:
-        chat = model.start_chat(history=[])
-        response = chat.send_message(SYSTEM_PROMPT + "\nUser: " + user_input)
-        reply = response.text
+        prompt = f"""
+You are an AI hiring assistant.
+Ask technical questions based on candidate tech stack.
+
+Conversation:
+{user_input}
+"""
+
+        response = client.text_generation(
+            prompt=f"<s>[INST] {prompt} [/INST]",
+            max_new_tokens=300,
+            temperature=0.4
+        )
+
+        reply = response.strip()
+
     except Exception as e:
         reply = f"Error: {e}"
 
     st.session_state.messages.append({"role": "assistant", "content": reply})
     with st.chat_message("assistant"):
         st.write(reply)
-
-
-
