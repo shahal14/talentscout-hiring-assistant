@@ -29,14 +29,15 @@ if user_input:
 
     try:
         completion = client.chat.completions.create(
-            model="llama3-8b-8192",  # FREE + STABLE
+            model="llama-3.1-8b-instant",
             messages=[
                 {"role": "system", "content": "You are an AI hiring assistant. Ask technical interview questions based on the candidate's tech stack."},
                 *st.session_state.messages
-            ],
+                ],
             temperature=0.4,
             max_tokens=300
-        )
+            )
+
 
         reply = completion.choices[0].message.content
 
