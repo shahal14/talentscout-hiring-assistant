@@ -1,7 +1,6 @@
 import streamlit as st
-from huggingface_hub import InferenceClient
+from groq import Groq
 import os
-from dotenv import load_dotenv
 
 # MUST be first Streamlit call
 st.set_page_config(
@@ -9,11 +8,7 @@ st.set_page_config(
     page_icon="🤖"
 )
 
-load_dotenv()
-HF_TOKEN = os.getenv("HF_API_TOKEN")
-
-# Hugging Face Router client
-client = InferenceClient(token=HF_TOKEN)
+client = Groq(api_key=st.secrets["GROQ_API_KEY"])
 
 st.title("🤖 TalentScout – AI Hiring Assistant")
 st.write("I will collect your details and generate technical questions based on your tech stack.")
@@ -33,18 +28,17 @@ if user_input:
         st.write(user_input)
 
     try:
-        prompt = f"""You are an AI hiring assistant.
-Ask technical interview questions based on the candidate's tech stack.
-
-User: {user_input}
-Assistant:"""
-
-        reply = client.text_generation(
-            model="microsoft/phi-2",   # ✅ ROUTER ENABLED
-            prompt=prompt,
-            max_new_tokens=300,
-            temperature=0.4
+        completion = client.chat.completions.create(
+            model="llama3-8b-8192",  # FREE + STABLE
+            messages=[
+                {"role": "system", "content": "You are an AI hiring assistant. Ask technical interview questions based on the candidate's tech stack."},
+                *st.session_state.messages
+            ],
+            temperature=0.4,
+            max_tokens=300
         )
+
+        reply = completion.choices[0].message.content
 
     except Exception as e:
         reply = f"Error: {e}"
