@@ -3,7 +3,7 @@ from huggingface_hub import InferenceClient
 import os
 from dotenv import load_dotenv
 
-# ✅ MUST BE FIRST STREAMLIT CALL
+# MUST BE FIRST STREAMLIT COMMAND
 st.set_page_config(
     page_title="TalentScout AI Hiring Assistant",
     page_icon="🤖",
@@ -11,7 +11,6 @@ st.set_page_config(
 )
 
 load_dotenv()
-
 HF_TOKEN = os.getenv("HF_API_TOKEN")
 
 client = InferenceClient(
@@ -46,7 +45,6 @@ User input:
 {user_input}
 [/INST]
 """
-
         reply = client.text_generation(
             prompt=prompt,
             max_new_tokens=300,
