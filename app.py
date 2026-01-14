@@ -12,8 +12,8 @@ st.set_page_config(
 load_dotenv()
 HF_TOKEN = os.getenv("HF_API_TOKEN")
 
+# Router-compatible client (NEW SDK REQUIRED)
 client = InferenceClient(
-    model="HuggingFaceH4/zephyr-7b-beta",  # ✅ router-supported
     token=HF_TOKEN
 )
 
@@ -35,19 +35,17 @@ if user_input:
         st.write(user_input)
 
     try:
-        prompt = f"""<s>[INST]
-You are an AI hiring assistant.
-Ask technical interview questions based on the candidate’s tech stack.
+        prompt = f"""You are an AI hiring assistant.
+Ask technical interview questions based on the candidate's tech stack.
 
-User message:
-{user_input}
-[/INST]
-"""
+User: {user_input}
+Assistant:"""
+
         reply = client.text_generation(
+            model="google/gemma-2b-it",  # ✅ GUARANTEED router model
             prompt=prompt,
             max_new_tokens=300,
-            temperature=0.4,
-            do_sample=True
+            temperature=0.4
         )
 
     except Exception as e:
