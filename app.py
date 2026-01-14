@@ -3,18 +3,17 @@ from huggingface_hub import InferenceClient
 import os
 from dotenv import load_dotenv
 
-# MUST BE FIRST STREAMLIT COMMAND
+# MUST be first Streamlit command
 st.set_page_config(
     page_title="TalentScout AI Hiring Assistant",
-    page_icon="🤖",
-    layout="centered"
+    page_icon="🤖"
 )
 
 load_dotenv()
 HF_TOKEN = os.getenv("HF_API_TOKEN")
 
 client = InferenceClient(
-    model="mistralai/Mistral-7B-Instruct-v0.2",
+    model="HuggingFaceH4/zephyr-7b-beta",  # ✅ router-supported
     token=HF_TOKEN
 )
 
@@ -36,12 +35,11 @@ if user_input:
         st.write(user_input)
 
     try:
-        prompt = f"""
-<s>[INST]
+        prompt = f"""<s>[INST]
 You are an AI hiring assistant.
-Ask technical interview questions based on the candidate's tech stack.
+Ask technical interview questions based on the candidate’s tech stack.
 
-User input:
+User message:
 {user_input}
 [/INST]
 """
