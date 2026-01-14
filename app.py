@@ -3,7 +3,7 @@ from huggingface_hub import InferenceClient
 import os
 from dotenv import load_dotenv
 
-# MUST be first Streamlit command
+# MUST be first Streamlit call
 st.set_page_config(
     page_title="TalentScout AI Hiring Assistant",
     page_icon="🤖"
@@ -12,10 +12,8 @@ st.set_page_config(
 load_dotenv()
 HF_TOKEN = os.getenv("HF_API_TOKEN")
 
-# Router-compatible client (NEW SDK REQUIRED)
-client = InferenceClient(
-    token=HF_TOKEN
-)
+# Hugging Face Router client
+client = InferenceClient(token=HF_TOKEN)
 
 st.title("🤖 TalentScout – AI Hiring Assistant")
 st.write("I will collect your details and generate technical questions based on your tech stack.")
@@ -42,7 +40,7 @@ User: {user_input}
 Assistant:"""
 
         reply = client.text_generation(
-            model="google/gemma-2b-it",  # ✅ GUARANTEED router model
+            model="microsoft/phi-2",   # ✅ ROUTER ENABLED
             prompt=prompt,
             max_new_tokens=300,
             temperature=0.4
